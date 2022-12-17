@@ -55,7 +55,10 @@ public class LightSwitches implements GameControlScene {
      * index = 6        // return true if pink is on (bit 6 == 1)
      */
     boolean isLightOn(int index) {
-        return false;
+    	byte lights = (byte) lightsOnOff;
+    	lights = (byte)(lights << (7-index));
+    	lights = (byte)(lights >> 7);
+        return (lights == 1);
     }
     
     /*
@@ -63,7 +66,8 @@ public class LightSwitches implements GameControlScene {
      * index = 4        // turn off yellow only (set bit 4 = 1)
      */
     void turnLightOn(int index) {
-        
+        byte value = (byte) (1<<(index-1));
+        lightsOnOff = value | lightsOnOff;
     }
     
     /*
@@ -71,7 +75,8 @@ public class LightSwitches implements GameControlScene {
      * index = 0        // turn off blue only (set bit 0 = 0)
      */
     void turnLightOff(int index) {
-        
+        byte value = (byte) (1<<(index-1));
+        lightsOnOff = lightsOnOff - value;
     }
     
     /*
@@ -79,7 +84,16 @@ public class LightSwitches implements GameControlScene {
      * lightsBitmap = 0b01100110  // lights 1, 2, 5, 6 on
      */
     void turnMultiLightsOn(int lightsBitmap) {
-        
+        byte map = (byte)lightsBitmap;
+        for (int i = 0; i < 8; i++) {
+        	byte temp = map;
+        	temp = (byte) (temp << (7-i));
+        	temp = (byte) (temp >> 7);
+        	if (temp == 1) {
+        		temp = (byte) (1 << i);
+        	}
+        	turnLightOn(temp);
+        }
     }
     
     /*
@@ -87,7 +101,16 @@ public class LightSwitches implements GameControlScene {
      * lightsBitmap = 0b10000001  // lights 0, 7 off
      */
     void turnMultiLightsOff(int lightsBitmap) {
-        
+    	byte map = (byte)lightsBitmap;
+        for (int i = 0; i < 8; i++) {
+        	byte temp = map;
+        	temp = (byte) (temp << (7-i));
+        	temp = (byte) (temp >> 7);
+        	if (temp == 1) {
+        		temp = (byte) (1 << i);
+        	}
+        	turnLightOff(temp);
+        }
     }
     
     /*
@@ -100,7 +123,19 @@ public class LightSwitches implements GameControlScene {
      *                               orange(3) and yellow(4) on
      */
     void toggleLights(int lightsBitmap) {
-        
+        byte map = (byte) lightsBitmap;
+        for (int i = 0; i < 8; i++) {
+        	byte temp = map;
+        	temp = (byte) (temp << (7-i));
+        	temp = (byte) (temp >> 7);
+        	temp = (byte) (temp << i);
+        	
+        	if ((lightsOnOff - temp) == (lightsOnOff ^ temp)) {
+        		turnLightOff(temp);
+        	}else {
+        		turnLightOn(temp);
+        	}
+        }
     }
     
     void runLightSequence1() {
