@@ -1,5 +1,7 @@
 package _05_Base64_Decoder;
 
+import java.util.ArrayList;
+
 /*
  * Base 64 is a way of encoding binary data using text.
  * Each number 0-63 is mapped to a character.
@@ -58,7 +60,7 @@ public class Base64Decoder {
     public static byte convertBase64Char(char c){
     	for (int i = 0; i < base64Chars.length; i++) {
     		if (base64Chars[i] == c) {
-    			return i;
+    			return (byte) i;
     		}
     	}
         return 0;
@@ -71,6 +73,34 @@ public class Base64Decoder {
     	
     	//Next time, treat each character as 6 bits, not 8
     	//cast the char to an int to get binary value of it
+    	
+    	char[] chars = s.toCharArray();
+    	ArrayList<Integer[]> list = new ArrayList<Integer[]>();
+    	for (int i = 0; i < 4; i++) {
+    		Integer[] array = new Integer[6];
+    		for (int j = 0; j < 6; j++) {
+    			byte ch = (byte) chars[i];
+    			ch = (byte) (ch << (7-i));
+    			ch = (byte) (ch >> 7);
+    			array[j] = (int) ch;
+    		}
+    		list.add(array);
+    	}
+    	
+    	Integer[] array = new Integer[24];
+    	int counter = 0;
+    	
+    	for (int i = 0; i < list.size(); i++) {
+    		for (int j = 0; j < list.get(i).length; j++) {
+    			array[counter] = list.get(i)[j];
+    		}
+    	}
+    	
+    	Byte[] finalArray = new Byte[3];
+    	
+    	for(int i = 0; i < 3; i++) {
+    		
+    	}
     	
         return null;
     }
